@@ -5,11 +5,13 @@ A super simple FastAPI application that allows students to view and sign up
 for extracurricular activities at Mergington High School.
 """
 
-from fastapi import FastAPI, HTTPException
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse
+import copy
 import os
 from pathlib import Path
+
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="Mergington High School API",
               description="API for viewing and signing up for extracurricular activities")
@@ -20,7 +22,7 @@ app.mount("/static", StaticFiles(directory=os.path.join(Path(__file__).parent,
           "static")), name="static")
 
 # In-memory activity database
-activities = {
+INITIAL_ACTIVITIES = {
     "Chess Club": {
         "description": "Learn strategies and compete in chess tournaments",
         "schedule": "Fridays, 3:30 PM - 5:00 PM",
@@ -76,6 +78,13 @@ activities = {
         "participants": ["charlotte@mergington.edu", "harper@mergington.edu"]
     }
 }
+
+activities = copy.deepcopy(INITIAL_ACTIVITIES)
+
+
+def reset_activities():
+    global activities
+    activities = copy.deepcopy(INITIAL_ACTIVITIES)
 
 
 @app.get("/")
